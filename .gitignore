@@ -20,4 +20,7 @@ libffi.xcodeproj/xcuserdata
 libffi.xcodeproj/project.xcworkspace
 ios/
 osx/
-build_*/
+.DS_Store
+build_ios/
+build_osx/
+build_simulator/
