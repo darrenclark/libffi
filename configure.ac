@@ -2,7 +2,7 @@ dnl Process this with autoconf to create configure
 
 AC_PREREQ(2.68)
 
-AC_INIT([libffi], [3.0.11], [http://github.com/atgreen/libffi/issues])
+AC_INIT([libffi], [3.0.12-rc0], [http://gcc.gnu.org/bugs.html])
 AC_CONFIG_HEADERS([fficonfig.h])
 
 AC_CANONICAL_SYSTEM
@@ -27,7 +27,7 @@ save_CFLAGS=$CFLAGS
 AC_PROG_CC
 CFLAGS=$save_CFLAGS
 m4_undefine([_AC_ARG_VAR_PRECIOUS])
-m4_rename([real_PRECIOUS],[_AC_ARG_VAR_PRECIOUS])
+m4_rename_force([real_PRECIOUS],[_AC_ARG_VAR_PRECIOUS])
 
 AC_SUBST(CFLAGS)
 
@@ -68,6 +68,10 @@ case "$host" in
 	;;
 
   amd64-*-freebsd* | amd64-*-openbsd*)
+	TARGET=X86_64; TARGETDIR=x86
+  	;;
+
+  amd64-*-freebsd*)
 	TARGET=X86_64; TARGETDIR=x86
   	;;
 
@@ -145,10 +149,6 @@ case "$host" in
 	# Support 128-bit long double for NewABI.
 	HAVE_LONG_DOUBLE='defined(__mips64)'
 	TARGET=MIPS; TARGETDIR=mips
-	;;
-
-  moxie-*-*)
-        TARGET=MOXIE; TARGETDIR=moxie
 	;;
 
   powerpc*-*-linux* | powerpc-*-sysv*)
@@ -350,13 +350,6 @@ if test x$TARGET = xX86 || test x$TARGET = xX86_WIN32 || test x$TARGET = xX86_64
     fi
 fi
 
-if test x$TARGET = xX86_WIN64; then
-    LT_SYS_SYMBOL_USCORE
-    if test "x$sys_symbol_underscore" = xyes; then
-        AC_DEFINE(SYMBOL_UNDERSCORE, 1, [Define if symbols are underscored.])
-    fi
-fi
-
 # On PaX enable kernels that have MPROTECT enable we can't use PROT_EXEC.
 AC_ARG_ENABLE(pax_emutramp,
   [  --enable-pax_emutramp       enable pax emulated trampolines, for we can't use PROT_EXEC],
@@ -364,6 +357,13 @@ AC_ARG_ENABLE(pax_emutramp,
     AC_DEFINE(FFI_MMAP_EXEC_EMUTRAMP_PAX, 1,
       [Define this if you want to enable pax emulated trampolines])
   fi)
+
+if test x$TARGET = xX86_WIN64; then
+    LT_SYS_SYMBOL_USCORE
+    if test "x$sys_symbol_underscore" = xyes; then
+        AC_DEFINE(SYMBOL_UNDERSCORE, 1, [Define if symbols are underscored.])
+    fi
+fi
 
 FFI_EXEC_TRAMPOLINE_TABLE=0
 case "$target" in
@@ -472,6 +472,7 @@ AC_ARG_ENABLE(structs,
   if test "$enable_structs" = "no"; then
     AC_DEFINE(FFI_NO_STRUCTS, 1, [Define this is you do not want support for aggregate types.])
   fi)
+AM_CONDITIONAL(FFI_DEBUG, test "$enable_debug" = "yes")
 
 AC_ARG_ENABLE(raw-api,
 [  --disable-raw-api       make the raw api unavailable],
@@ -503,12 +504,6 @@ if test x"$GCC" != x"no"; then
   esac
   AC_SUBST(toolexecdir)
   AC_SUBST(toolexeclibdir)
-fi
-
-if test "${multilib}" = "yes"; then
-  multilib_arg="--enable-multilib"
-else
-  multilib_arg=
 fi
 
 AC_CONFIG_COMMANDS(include, [test -d include || mkdir include])

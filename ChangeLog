@@ -1,3 +1,14 @@
+2013-01-02  rofl0r <https://github.com/rofl0r>
+
+	* src/powerpc/ffi.c (ffi_prep_cif_machdep): Fix build error on ppc
+	when long double == double.
+
+2013-01-02  Reini Urban  <rurban@x-ray.at>
+
+	* Makefile.am (libffi_la_LDFLAGS): Add -no-undefined to LDFLAGS
+	(required for shared libs on cygwin/mingw).
+	* Makefile.in: Rebuilt.
+
 2012-10-31  Alan Modra  <amodra@gmail.com>
 
 	* src/powerpc/linux64_closure.S: Add new ABI support.
@@ -147,6 +158,22 @@
 	* src/arm/sysv.S: Fix ENTRY definition, and wrap symbol references
 	in CNAME.
 	* src/x86/ffi.c: Wrap Windows specific code in ifdefs.
+
+2012-04-02  Peter Bergner  <bergner@vnet.ibm.com>
+
+	* src/powerpc/ffi.c (ffi_prep_args_SYSV): Declare double_tmp.
+	Silence casting pointer to integer of different size warning.
+	Delete goto to previously deleted label.
+	(ffi_call): Silence possibly undefined warning.
+	(ffi_closure_helper_SYSV): Declare variable type.
+
+2012-04-02  Peter Rosin  <peda@lysator.liu.se>
+
+	* src/x86/win32.S (ffi_call_win32): Sign/zero extend the return
+	value in the Intel version as is already done for the AT&T version.
+	(ffi_closure_SYSV): Likewise.
+	(ffi_closure_raw_SYSV): Likewise.
+	(ffi_closure_STDCALL): Likewise.
 
 2012-03-29  Peter Rosin  <peda@lysator.liu.se>
 
@@ -298,6 +325,13 @@
 	(and save PATH for later).
 	(restore_ld_library_path_env_vars): Restore PATH.
 
+2012-03-21  Peter Rosin  <peda@lysator.liu.se>
+
+	* testsuite/lib/target-libpath.exp [*-*-cygwin*, *-*-mingw*]
+	(set_ld_library_path_env_vars): Add the library search dir to PATH
+	(and save PATH for later).
+	(restore_ld_library_path_env_vars): Restore PATH.
+
 2012-03-20  Peter Rosin  <peda@lysator.liu.se>
 
 	* testsuite/libffi.call/strlen2_win32.c (main): Remove bug.
@@ -315,11 +349,6 @@
 	* src/m68k/ffi.c: Add MINT support.
 	* src/m68k/sysv.S: Ditto.
 
-2012-03-19  chennam  <csit@axway.com>
-
-	* src/powerpc/ffi_darwin.c (ffi_prep_closure_loc): Fix AIX closure
-	support.
-
 2012-03-06  Chung-Lin Tang  <cltang@codesourcery.com>
 
 	* src/arm/ffi.c (ffi_call): Add __ARM_EABI__ guard around call to
@@ -328,21 +357,10 @@
 	ffi_closure_VFP.
 	* src/arm/sysv.S: Add __ARM_EABI__ guard around VFP code.
 
-2012-04-02  Peter Bergner  <bergner@vnet.ibm.com>
+2012-03-19  chennam  <csit@axway.com>
 
-	* src/powerpc/ffi.c (ffi_prep_args_SYSV): Declare double_tmp.
-	Silence casting pointer to integer of different size warning.
-	Delete goto to previously deleted label.
-	(ffi_call): Silence possibly undefined warning.
-	(ffi_closure_helper_SYSV): Declare variable type.
-
-2012-04-02  Peter Rosin  <peda@lysator.liu.se>
-
-	* src/x86/win32.S (ffi_call_win32): Sign/zero extend the return
-	value in the Intel version as is already done for the AT&T version.
-	(ffi_closure_SYSV): Likewise.
-	(ffi_closure_raw_SYSV): Likewise.
-	(ffi_closure_STDCALL): Likewise.
+	* src/powerpc/ffi_darwin.c (ffi_prep_closure_loc): Fix AIX closure
+	support.
 
 2012-03-13  Kaz Kojima  <kkojima@gcc.gnu.org>
 
